@@ -10,105 +10,117 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ScrollView,
 } from 'react-native';
+import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import api from '../api/api';
 
-export default function CreateInvoiceScreen() {
-  const [nrc, setNrc] = useState('');
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [nit, setNit] = useState('');
-  const [business, setBusiness] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [includeIva, setIncludeIva] = useState(false);
-  const [totalPrice, setTotalPrice] = useState('');
+const CreateInvoiceScreen = ({ navigation }) => {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    NIT: '',
+    address: '',
+    NRC: '',
+    job: '',
+    description: '',
+    pricing: '',
+  });
+  const [loading, setLoading] = useState(false);
 
-  const clients = [
-    {
-      nrc: '12345',
-      name: 'Cliente Ejemplo',
-      address: 'Calle Falsa 123',
-      nit: '54321',
-      business: 'Transporte',
-    },
-  ];
+  const handleChange = (field, value) => {
+    setForm({ ...form, [field]: value });
+  };
 
-  const handleNrcChange = (value) => {
-    setNrc(value);
-    const client = clients.find((c) => c.nrc === value);
-    if (client) {
-      setName(client.name);
-      setAddress(client.address);
-      setNit(client.nit);
-      setBusiness(client.business);
-    } else {
-      setName('');
-      setAddress('');
-      setNit('');
-      setBusiness('');
+  const handleSubmit = async () => {
+    if (!form.name || !form.email || !form.pricing) {
+      Alert.alert('Error', 'Nombre, correo y total son obligatorios');
+      return;
+    }
+    setLoading(true);
+    try {
+      await api.post('items/bill', { ...form, pricing: parseFloat(form.pricing) });
+      Alert.alert('Éxito', 'Factura creada correctamente');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo crear la factura');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const calculateTotalPrice = () => {
-    const basePrice = parseFloat(price) || 0;
-    const iva = includeIva ? basePrice * 0.13 : 0;
-    setTotalPrice((basePrice + iva).toFixed(2));
-  };
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Crear Factura</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Número de Registro (NRC)"
-            value={nrc}
-            onChangeText={handleNrcChange}
-            keyboardType="numeric"
-          />
-          <TextInput style={styles.input} placeholder="Nombre" value={name} editable={false} />
-          <TextInput style={styles.input} placeholder="Dirección" value={address} editable={false} />
-          <TextInput style={styles.input} placeholder="NIT" value={nit} editable={false} />
-          <TextInput style={styles.input} placeholder="Giro" value={business} editable={false} />
-          <TextInput
-            style={styles.input}
-            placeholder="Descripción"
-            value={description}
-            onChangeText={setDescription}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Precio"
-            value={price}
-            onChangeText={(value) => {
-              setPrice(value);
-              calculateTotalPrice();
-            }}
-            keyboardType="numeric"
-          />
-          <View style={styles.switchContainer}>
-            <Text style={styles.switchLabel}>¿Incluir IVA?</Text>
-            <Switch
-              value={includeIva}
-              onValueChange={(value) => {
-                setIncludeIva(value);
-                calculateTotalPrice();
-              }}
-            />
-          </View>
-          <Text style={styles.totalPrice}>Precio Total: ${totalPrice}</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Guardar Factura</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    <SafeAreaView style={globalStyles.container}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Text style={typography.h1}>Crear Factura</Text>
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Nombre del cliente"
+          value={form.name}
+          onChangeText={(text) => handleChange('name', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Correo electrónico"
+          value={form.email}
+          onChangeText={(text) => handleChange('email', text)}
+          keyboardType="email-address"
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="NIT"
+          value={form.NIT}
+          onChangeText={(text) => handleChange('NIT', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Dirección"
+          value={form.address}
+          onChangeText={(text) => handleChange('address', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="NRC"
+          value={form.NRC}
+          onChangeText={(text) => handleChange('NRC', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Giro"
+          value={form.job}
+          onChangeText={(text) => handleChange('job', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Descripción"
+          value={form.description}
+          onChangeText={(text) => handleChange('description', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Total ($)"
+          value={form.pricing}
+          onChangeText={text => {
+            const numeric = text.replace(/[^0-9.]/g, '');
+            handleChange('pricing', numeric);
+          }}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity
+          style={[globalStyles.button, { marginTop: spacing.lg }]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={globalStyles.buttonText}>{loading ? 'Guardando...' : 'Crear Factura'}</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
-}
+};
+
+export default CreateInvoiceScreen;
 
 const styles = StyleSheet.create({
   container: {
