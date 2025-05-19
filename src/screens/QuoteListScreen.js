@@ -1,32 +1,73 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function QuoteListScreen() {
+const QuoteListScreen = ({ navigation }) => {
+  const [quotes, setQuotes] = React.useState([]); // You'll need to implement the actual data fetching
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Lista de Cotizaciones</Text>
-      {/* Aquí se mostrará la lista de cotizaciones */}
-      <Text style={styles.placeholder}>No hay cotizaciones registradas aún.</Text>
-    </View>
+    <SafeAreaView style={globalStyles.container}>
+      <View style={styles.header}>
+        <Text style={typography.h1}>Cotizaciones</Text>
+      </View>
+      
+      <FlatList
+        data={quotes}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={globalStyles.card}>
+            <Text style={typography.h3}>{item.clientName}</Text>
+            <Text style={typography.body}>Fecha: {item.date}</Text>
+            <Text style={typography.body}>Total: ${item.total}</Text>
+          </View>
+        )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={typography.body}>No hay cotizaciones registradas</Text>
+          </View>
+        }
+      />
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('CreateQuote')}
+      >
+        <Ionicons name="add" size={24} color={colors.background} />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  header: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  emptyContainer: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  placeholder: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: 20,
+  fab: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing.lg,
+    backgroundColor: colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: colors.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
+
+export default QuoteListScreen;

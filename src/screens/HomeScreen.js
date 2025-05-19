@@ -1,90 +1,98 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomeScreen({ navigation }) {
+const HomeScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      {/* Logo de la empresa */}
-      <Image
-        source={require('../assets/logo.png')} // Asegúrate de colocar el logo en la carpeta assets
-        style={styles.logo}
-      />
-      <Text style={styles.title}>Grúas Moisés</Text>
+    <SafeAreaView style={globalStyles.container}>
+      <View style={styles.welcomeContainer}>
+        <Text style={[typography.h1, styles.welcomeTitle]}>¡Bienvenido!</Text>
+        <Text style={[typography.body, styles.welcomeSubtitle]}>
+          Sistema de Gestión de Facturas y Cotizaciones
+        </Text>
+        <View style={styles.statsContainer}>
+          <TouchableOpacity 
+            style={[globalStyles.card, styles.statCard]}
+            onPress={() => navigation.navigate('ClientsTab')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.cardContent}>
+              <Ionicons name="people" size={32} color={colors.primary} />
+              <View style={styles.cardText}>
+                <Text style={typography.h3}>Clientes</Text>
+                <Text style={typography.body}>Gestiona tu lista de clientes</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
+            </View>
+          </TouchableOpacity>
 
-      {/* Opciones del menú */}
-      <View style={styles.menu}>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('RegisterClientScreen')}
-        >
-          <Text style={styles.menuText}>Registrar Cliente</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('ClientListScreen')}
-        >
-          <Text style={styles.menuText}>Ver Clientes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('CreateInvoiceScreen')}
-        >
-          <Text style={styles.menuText}>Crear Factura</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('InvoiceListScreen')}
-        >
-          <Text style={styles.menuText}>Ver Facturas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('CreateQuoteScreen')}
-        >
-          <Text style={styles.menuText}>Crear Cotización</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => navigation.navigate('QuoteListScreen')}
-        >
-          <Text style={styles.menuText}>Ver Cotizaciones</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[globalStyles.card, styles.statCard]}
+            onPress={() => navigation.navigate('QuotesTab')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.cardContent}>
+              <Ionicons name="document-text" size={32} color={colors.primary} />
+              <View style={styles.cardText}>
+                <Text style={typography.h3}>Cotizaciones</Text>
+                <Text style={typography.body}>Crea y administra cotizaciones</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[globalStyles.card, styles.statCard]}
+            onPress={() => navigation.navigate('InvoicesTab')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.cardContent}>
+              <Ionicons name="receipt" size={32} color={colors.primary} />
+              <View style={styles.cardText}>
+                <Text style={typography.h3}>Facturas</Text>
+                <Text style={typography.body}>Controla tus facturas</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
+  welcomeContainer: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    padding: spacing.lg,
+  },
+  welcomeTitle: {
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  welcomeSubtitle: {
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+    color: colors.textSecondary,
+  },
+  statsContainer: {
+    gap: spacing.md,
+  },
+  statCard: {
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+  },
+  cardContent: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    justifyContent: 'space-between',
   },
-  logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 30,
-  },
-  menu: {
-    width: '100%',
-  },
-  menuItem: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    alignItems: 'center',
-  },
-  menuText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+  cardText: {
+    flex: 1,
+    marginLeft: spacing.md,
   },
 });
+
+export default HomeScreen;

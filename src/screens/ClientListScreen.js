@@ -1,55 +1,72 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function ClientListScreen() {
-  // Datos simulados
-  const [clients, setClients] = useState([
-    { id: 1, nombre: 'Cliente Ejemplo 1', nrc: '12345' },
-    { id: 2, nombre: 'Cliente Ejemplo 2', nrc: '67890' },
-    { id: 3, nombre: 'Cliente Ejemplo 3', nrc: '54321' },
-  ]);
+const ClientListScreen = ({ navigation }) => {
+  const [clients, setClients] = React.useState([]); // You'll need to implement the actual data fetching
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Lista de Clientes</Text>
-      {/* Mostrar la lista de clientes */}
+    <SafeAreaView style={globalStyles.container}>
+      <View style={styles.header}>
+        <Text style={typography.h1}>Clientes</Text>
+      </View>
+      
       <FlatList
         data={clients}
-        keyExtractor={(item) => item.id.toString()} // Usa el ID del cliente como clave
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.clientItem}>
-            <Text style={styles.clientName}>{item.nombre}</Text>
-            <Text style={styles.clientNrc}>NRC: {item.nrc}</Text>
+          <View style={globalStyles.card}>
+            <Text style={typography.h3}>{item.name}</Text>
+            <Text style={typography.body}>{item.email}</Text>
           </View>
         )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={typography.body}>No hay clientes registrados</Text>
+          </View>
+        }
       />
-    </View>
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('RegisterClient')}
+      >
+        <Ionicons name="add" size={24} color={colors.background} />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  clientItem: {
-    padding: 15,
+  header: {
+    padding: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: colors.border,
   },
-  clientName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
   },
-  clientNrc: {
-    fontSize: 14,
-    color: '#555',
+  fab: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing.lg,
+    backgroundColor: colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: colors.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
+
+export default ClientListScreen;
