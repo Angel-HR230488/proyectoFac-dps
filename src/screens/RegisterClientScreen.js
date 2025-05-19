@@ -1,92 +1,92 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import api from '../api/api';
 
-export default function RegisterClientScreen() {
-  const [nit, setNit] = useState('');
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [nrc, setNrc] = useState('');
-  const [business, setBusiness] = useState('');
-  const [email, setEmail] = useState('');
+const RegisterClientScreen = ({ navigation }) => {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    NIT: '',
+    address: '',
+    NRC: '',
+    job: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (field, value) => {
+    setForm({ ...form, [field]: value });
+  };
+
+  const handleSubmit = async () => {
+    if (!form.name || !form.email) {
+      Alert.alert('Error', 'Nombre y correo son obligatorios');
+      return;
+    }
+    setLoading(true);
+    try {
+      await api.post('items/client', form);
+      Alert.alert('Éxito', 'Cliente registrado correctamente');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo registrar el cliente');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrar Cliente</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="NIT"
-        value={nit}
-        onChangeText={setNit}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Dirección"
-        value={address}
-        onChangeText={setAddress}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Número de Registro (NRC)"
-        value={nrc}
-        onChangeText={setNrc}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Giro"
-        value={business}
-        onChangeText={setBusiness}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Correo Electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Guardar Cliente</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={globalStyles.container}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Text style={typography.h1}>Registrar Cliente</Text>
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Nombre"
+          value={form.name}
+          onChangeText={(text) => handleChange('name', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Correo electrónico"
+          value={form.email}
+          onChangeText={(text) => handleChange('email', text)}
+          keyboardType="email-address"
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="NIT"
+          value={form.NIT}
+          onChangeText={(text) => handleChange('NIT', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Dirección"
+          value={form.address}
+          onChangeText={(text) => handleChange('address', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="NRC"
+          value={form.NRC}
+          onChangeText={(text) => handleChange('NRC', text)}
+        />
+        <TextInput
+          style={globalStyles.input}
+          placeholder="Giro"
+          value={form.job}
+          onChangeText={(text) => handleChange('job', text)}
+        />
+        <TouchableOpacity
+          style={[globalStyles.button, { marginTop: spacing.lg }]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={globalStyles.buttonText}>{loading ? 'Guardando...' : 'Registrar'}</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
+export default RegisterClientScreen;

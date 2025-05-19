@@ -2,8 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-
-// Import screens
+import { TouchableOpacity } from 'react-native';
+import { colors } from '../styles/globalStyles';
 import HomeScreen from '../screens/HomeScreen';
 import ClientListScreen from '../screens/ClientListScreen';
 import QuoteListScreen from '../screens/QuoteListScreen';
@@ -15,35 +15,46 @@ import RegisterClientScreen from '../screens/RegisterClientScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Stack navigators for each tab
-const HomeStack = () => (
+const HomeStack = ({ onLogout }) => (
   <Stack.Navigator>
-    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen 
+      name="Home" 
+      options={{
+        title: 'Inicio',
+        headerRight: () => (
+          <TouchableOpacity onPress={onLogout} style={{ marginRight: 16 }}>
+            <Ionicons name="log-out-outline" size={24} color={colors.error} />
+          </TouchableOpacity>
+        ),
+      }}
+    >
+      {props => <HomeScreen {...props} />}
+    </Stack.Screen>
   </Stack.Navigator>
 );
 
 const ClientsStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="ClientList" component={ClientListScreen} />
-    <Stack.Screen name="RegisterClient" component={RegisterClientScreen} />
+    <Stack.Screen name="ClientList" component={ClientListScreen} options={{ title: 'Clientes' }} />
+    <Stack.Screen name="RegisterClient" component={RegisterClientScreen} options={{ title: 'Registrar Cliente' }} />
   </Stack.Navigator>
 );
 
 const QuotesStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="QuoteList" component={QuoteListScreen} />
-    <Stack.Screen name="CreateQuote" component={CreateQuoteScreen} />
+    <Stack.Screen name="QuoteList" component={QuoteListScreen} options={{ title: 'Cotizaciones' }} />
+    <Stack.Screen name="CreateQuote" component={CreateQuoteScreen} options={{ title: 'Crear Cotización' }} />
   </Stack.Navigator>
 );
 
 const InvoicesStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="InvoiceList" component={InvoiceListScreen} />
-    <Stack.Screen name="CreateInvoice" component={CreateInvoiceScreen} />
+    <Stack.Screen name="InvoiceList" component={InvoiceListScreen} options={{ title: 'Facturas' }} />
+    <Stack.Screen name="CreateInvoice" component={CreateInvoiceScreen} options={{ title: 'Crear Factura' }} />
   </Stack.Navigator>
 );
 
-const AppNavigator = () => {
+const AppNavigator = ({ onLogout }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -69,7 +80,7 @@ const AppNavigator = () => {
     >
       <Tab.Screen 
         name="HomeTab" 
-        component={HomeStack}
+        children={() => <HomeStack onLogout={onLogout} />}
         options={{ title: 'Inicio' }}
       />
       <Tab.Screen 
