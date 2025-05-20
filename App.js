@@ -27,7 +27,7 @@ export default function App() {
   
   const [token, setToken] = useState(null);
 
-  // Estado para manejar si se está cargando la verificación del token.
+  
   const [loading, setLoading] = useState(true);
 
   
@@ -62,16 +62,15 @@ export default function App() {
   // Si aún se está cargando la verificación del token, no muestra nada (pantalla en blanco).
   if (loading) return null;
 
-  // Renderiza el contenido principal de la app.
   return (
     <SafeAreaProvider> {/* Asegura que los elementos no se superpongan con áreas no seguras como la muesca del iPhone. */}
       <NavigationContainer> {/* Contenedor para manejar la navegación entre pantallas. */}
         <StatusBar style="auto" /> {/* Muestra la barra de estado con estilo predeterminado. */}
         {token ? (
-          // Si hay token, se muestra el navegador principal de la app (usuario autenticado).
+          
           <AppNavigator onLogout={handleLogout} />
         ) : (
-          // Si no hay token, se muestra la pantalla de login.
+          
           <LoginScreen onLogin={handleLogin} />
         )}
       </NavigationContainer>
