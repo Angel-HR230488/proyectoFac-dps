@@ -16,6 +16,7 @@ const ClientListScreen = ({ navigation }) => {
       const res = await api.get('items/client');
       setClients(res.data.data || []);
     } catch (error) {
+      console.error("error",error)
       Alert.alert('Error', 'No se pudieron cargar los clientes');
     } finally {
       setLoading(false);

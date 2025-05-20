@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import CreativeCommons from '../components/CreativeCommons';
 
 const HomeScreen = ({ navigation }) => {
   return (
@@ -59,6 +60,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+      <CreativeCommons />
     </SafeAreaView>
   );
 };

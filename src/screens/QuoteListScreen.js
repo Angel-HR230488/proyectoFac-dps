@@ -87,7 +87,7 @@ const QuoteListScreen = ({ navigation }) => {
             <View style={globalStyles.card}>
               <Text style={typography.h3}>{item.name}</Text>
               <Text style={typography.body}>NRC: {item.NRC}</Text>
-              <Text style={typography.caption}>{item.description}</Text>
+              <Text style={typography.caption}>Descripción: {item.description}</Text>
             </View>
           </TouchableOpacity>
         )}
