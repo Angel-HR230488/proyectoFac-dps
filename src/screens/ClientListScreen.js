@@ -5,29 +5,34 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/api';
 
+// Pantalla principal de la lista de clientes
 const ClientListScreen = ({ navigation }) => {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
+  // Estados locales
+  const [clients, setClients] = useState([]);      // Lista de clientes
+  const [loading, setLoading] = useState(false);   // Estado de carga
+  const [search, setSearch] = useState('');        // Texto de búsqueda
 
+  // Función para obtener los clientes desde la API
   const fetchClients = async () => {
     setLoading(true);
     try {
       const res = await api.get('items/client');
       setClients(res.data.data || []);
     } catch (error) {
-      console.error("error",error)
+      console.error("error", error);
       Alert.alert('Error', 'No se pudieron cargar los clientes');
     } finally {
       setLoading(false);
     }
   };
 
+  // Efecto para recargar la lista cuando la pantalla toma foco
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', fetchClients);
     return unsubscribe;
   }, [navigation]);
 
+  // Maneja la eliminación de un cliente
   const handleDelete = (id) => {
     Alert.alert(
       'Eliminar cliente',
@@ -50,6 +55,7 @@ const ClientListScreen = ({ navigation }) => {
     );
   };
 
+  // Filtra los clientes según el texto de búsqueda
   const filteredClients = clients.filter((item) => {
     const q = search.toLowerCase();
     return (
@@ -60,17 +66,21 @@ const ClientListScreen = ({ navigation }) => {
     );
   });
 
+  // Renderizado de la pantalla
   return (
     <SafeAreaView style={globalStyles.container}>
+      {/* Encabezado */}
       <View style={styles.header}>
         <Text style={typography.h1}>Clientes</Text>
       </View>
+      {/* Barra de búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Buscar cliente..."
         value={search}
         onChangeText={setSearch}
       />
+      {/* Lista de clientes */}
       <FlatList
         data={filteredClients}
         keyExtractor={(item) => item.id}
@@ -83,6 +93,7 @@ const ClientListScreen = ({ navigation }) => {
               <Text style={typography.body}>{item.email}</Text>
               <Text style={typography.caption}>NIT: {item.NIT} | NRC: {item.NRC}</Text>
             </View>
+            {/* Botón para eliminar cliente */}
             <TouchableOpacity
               style={styles.deleteBtn}
               onPress={() => handleDelete(item.id)}
@@ -97,6 +108,7 @@ const ClientListScreen = ({ navigation }) => {
           </View>
         }
       />
+      {/* Botón flotante para agregar cliente */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate('ClientsTab', { screen: 'RegisterClient' })}
@@ -107,6 +119,7 @@ const ClientListScreen = ({ navigation }) => {
   );
 };
 
+// Estilos de la pantalla
 const styles = StyleSheet.create({
   header: {
     padding: spacing.md,
@@ -145,4 +158,5 @@ const styles = StyleSheet.create({
   },
 });
 
+// Exporta la pantalla
 export default ClientListScreen;

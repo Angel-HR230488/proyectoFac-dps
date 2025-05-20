@@ -5,13 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/api';
 
+// Pantalla principal de la lista de cotizaciones
 const QuoteListScreen = ({ navigation }) => {
-  const [quotes, setQuotes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [search, setSearch] = useState('');
+  // Estados locales
+  const [quotes, setQuotes] = useState([]);           // Lista de cotizaciones
+  const [loading, setLoading] = useState(false);      // Estado de carga
+  const [selected, setSelected] = useState(null);     // Cotización seleccionada para ver detalles
+  const [modalVisible, setModalVisible] = useState(false); // Visibilidad del modal de detalles
+  const [search, setSearch] = useState('');           // Texto de búsqueda
 
+  // Función para obtener las cotizaciones desde la API
   const fetchQuotes = async () => {
     setLoading(true);
     try {
@@ -24,11 +27,13 @@ const QuoteListScreen = ({ navigation }) => {
     }
   };
 
+  // Efecto para recargar la lista cuando la pantalla toma foco
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', fetchQuotes);
     return unsubscribe;
   }, [navigation]);
 
+  // Maneja la eliminación de una cotización
   const handleDelete = (id) => {
     Alert.alert(
       'Eliminar cotización',
@@ -52,11 +57,13 @@ const QuoteListScreen = ({ navigation }) => {
     );
   };
 
+  // Abre el modal de detalles de una cotización
   const openDetails = (item) => {
     setSelected(item);
     setModalVisible(true);
   };
 
+  // Filtra las cotizaciones según el texto de búsqueda
   const filteredQuotes = quotes.filter((item) => {
     const q = search.toLowerCase();
     return (
@@ -66,17 +73,21 @@ const QuoteListScreen = ({ navigation }) => {
     );
   });
 
+  // Renderizado de la pantalla
   return (
     <SafeAreaView style={globalStyles.container}>
+      {/* Encabezado */}
       <View style={styles.header}>
         <Text style={typography.h1}>Cotizaciones</Text>
       </View>
+      {/* Barra de búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Buscar cotización..."
         value={search}
         onChangeText={setSearch}
       />
+      {/* Lista de cotizaciones */}
       <FlatList
         data={filteredQuotes}
         keyExtractor={(item) => item.id}
@@ -97,6 +108,7 @@ const QuoteListScreen = ({ navigation }) => {
           </View>
         }
       />
+      {/* Botón flotante para agregar cotización */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate('QuotesTab', { screen: 'CreateQuote' })}
@@ -104,7 +116,7 @@ const QuoteListScreen = ({ navigation }) => {
         <Ionicons name="add" size={24} color={colors.background} />
       </TouchableOpacity>
 
-      {/* Modal de detalles */}
+      {/* Modal de detalles de cotización */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -142,6 +154,7 @@ const QuoteListScreen = ({ navigation }) => {
   );
 };
 
+// Estilos locales de la pantalla
 const styles = StyleSheet.create({
   header: {
     padding: spacing.md,

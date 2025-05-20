@@ -1,3 +1,4 @@
+// Importaciones de librerías y componentes necesarios
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
@@ -10,20 +11,23 @@ import QuoteInvoiceComparison from '../components/QuoteInvoiceComparison';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../api/api';
 
+// Pantalla principal de inicio
 const HomeScreen = ({ navigation }) => {
-  const [textSize, setTextSize] = useState(1);
-  const [salesData, setSalesData] = useState([]);
-  const [quotes, setQuotes] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Estados locales
+  const [textSize, setTextSize] = useState(1);         // Tamaño del texto
+  const [salesData, setSalesData] = useState([]);      // Datos de ventas para el gráfico
+  const [quotes, setQuotes] = useState([]);            // Lista de cotizaciones
+  const [invoices, setInvoices] = useState([]);        // Lista de facturas
+  const [loading, setLoading] = useState(true);        // Estado de carga
+  const [error, setError] = useState(null);            // Estado de error
 
+  // Función para obtener datos de la API
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // Obtener facturas
       const billsResponse = await api.get('/items/bill');
-
       const formattedSalesData = billsResponse.data.data.map(item => ({
         date: item.date_created,
         amount: item.pricing || 0,
@@ -31,21 +35,21 @@ const HomeScreen = ({ navigation }) => {
       setSalesData(formattedSalesData);
 
       const formattedInvoices = billsResponse.data.data.map(item => ({
-          id: item.id,
-          quoteId: null,
-          date: item.date_created,
-          amount: item.pricing || 0,
-          name: item.name,
+        id: item.id,
+        quoteId: null,
+        date: item.date_created,
+        amount: item.pricing || 0,
+        name: item.name,
       }));
       setInvoices(formattedInvoices);
 
+      // Obtener cotizaciones
       const quotesResponse = await api.get('/items/quotation');
-
       const formattedQuotes = quotesResponse.data.data.map(item => ({
-          id: item.id,
-          date: item.date_created,
-          amount: 0,
-          name: item.name,
+        id: item.id,
+        date: item.date_created,
+        amount: 0,
+        name: item.name,
       }));
       setQuotes(formattedQuotes);
 
@@ -57,6 +61,7 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [setLoading, setError, api, setSalesData, setInvoices, setQuotes]);
 
+  // Efecto para cargar datos y tamaño de texto al iniciar
   useEffect(() => {
     const loadTextSize = async () => {
       try {
@@ -71,13 +76,14 @@ const HomeScreen = ({ navigation }) => {
 
     loadTextSize();
     fetchData();
-
   }, [fetchData]);
 
+  // Maneja el cambio de tamaño de texto
   const handleTextSizeChange = (newSize) => {
     setTextSize(newSize);
   };
 
+  // Renderiza indicador de carga
   if (loading) {
     return (
       <SafeAreaView style={[globalStyles.container, styles.centered]}>
@@ -87,21 +93,24 @@ const HomeScreen = ({ navigation }) => {
     );
   }
 
+  // Renderiza mensaje de error
   if (error) {
     return (
       <SafeAreaView style={[globalStyles.container, styles.centered]}>
         <Text style={[typography.h3, styles.errorText]}>{error}</Text>
         <TouchableOpacity onPress={fetchData} style={{ marginTop: spacing.md }}>
-            <Text style={styles.retryButtonText}>Intentar de nuevo</Text>
+          <Text style={styles.retryButtonText}>Intentar de nuevo</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
   }
 
+  // Renderizado principal de la pantalla de inicio
   return (
     <SafeAreaView style={globalStyles.container}>
       <ScrollView style={styles.container}>
         <View style={styles.welcomeContainer}>
+          {/* Título y subtítulo de bienvenida */}
           <Text style={[typography.h1, styles.welcomeTitle, { fontSize: typography.h1.fontSize * textSize }]}>
             ¡Bienvenido!
           </Text>
@@ -109,6 +118,7 @@ const HomeScreen = ({ navigation }) => {
             Sistema de Gestión de Facturas y Cotizaciones
           </Text>
 
+          {/* Controles de accesibilidad y refrescar */}
           <View style={styles.controlsContainer}>
             <TextSizeAdjuster onTextSizeChange={handleTextSizeChange} />
             <TouchableOpacity onPress={fetchData} style={styles.refreshButton} disabled={loading}>
@@ -116,6 +126,7 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
+          {/* Accesos rápidos a clientes, cotizaciones y facturas */}
           <View style={styles.statsContainer}>
             <TouchableOpacity 
               style={[globalStyles.card, styles.statCard]}
@@ -163,22 +174,26 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
+          {/* Gráfico de ventas mensuales */}
           <View style={styles.chartContainer}>
             <Text style={[typography.h3, { fontSize: typography.h3.fontSize * textSize }]}>Ventas Mensuales</Text>
             <SalesChart data={salesData} type="line" />
           </View>
 
+          {/* Comparativa de cotizaciones vs facturas */}
           <View style={styles.comparisonContainer}>
             <Text style={[typography.h3, { fontSize: typography.h3.fontSize * textSize }]}>Comparativa Cotizaciones vs Facturas</Text>
             <QuoteInvoiceComparison quotes={quotes} invoices={invoices} />
           </View>
         </View>
+        {/* Pie de página con créditos */}
         <CreativeCommons />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
+// Estilos locales de la pantalla
 const styles = StyleSheet.create({
   container: {
     flex: 1,

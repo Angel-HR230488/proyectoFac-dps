@@ -1,3 +1,4 @@
+// Importaciones de librerías y componentes necesarios
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Modal, Pressable, TextInput } from 'react-native';
 import { globalStyles, colors, typography, spacing } from '../styles/globalStyles';
@@ -5,13 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/api';
 
+// Pantalla principal de la lista de facturas
 const InvoiceListScreen = ({ navigation }) => {
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [search, setSearch] = useState('');
+  // Estados locales
+  const [invoices, setInvoices] = useState([]);         // Lista de facturas
+  const [loading, setLoading] = useState(false);        // Estado de carga
+  const [selected, setSelected] = useState(null);       // Factura seleccionada para ver detalles
+  const [modalVisible, setModalVisible] = useState(false); // Visibilidad del modal de detalles
+  const [search, setSearch] = useState('');             // Texto de búsqueda
 
+  // Función para obtener las facturas desde la API
   const fetchInvoices = async () => {
     setLoading(true);
     try {
@@ -24,11 +28,13 @@ const InvoiceListScreen = ({ navigation }) => {
     }
   };
 
+  // Efecto para recargar la lista cuando la pantalla toma foco
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', fetchInvoices);
     return unsubscribe;
   }, [navigation]);
 
+  // Maneja la eliminación de una factura
   const handleDelete = (id) => {
     Alert.alert(
       'Eliminar factura',
@@ -52,11 +58,13 @@ const InvoiceListScreen = ({ navigation }) => {
     );
   };
 
+  // Abre el modal de detalles de una factura
   const openDetails = (item) => {
     setSelected(item);
     setModalVisible(true);
   };
 
+  // Filtra las facturas según el texto de búsqueda
   const filteredInvoices = invoices.filter((item) => {
     const q = search.toLowerCase();
     return (
@@ -68,17 +76,21 @@ const InvoiceListScreen = ({ navigation }) => {
     );
   });
 
+  // Renderizado de la pantalla
   return (
     <SafeAreaView style={globalStyles.container}>
+      {/* Encabezado */}
       <View style={styles.header}>
         <Text style={typography.h1}>Facturas</Text>
       </View>
+      {/* Barra de búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Buscar factura..."
         value={search}
         onChangeText={setSearch}
       />
+      {/* Lista de facturas */}
       <FlatList
         data={filteredInvoices}
         keyExtractor={(item) => item.id}
@@ -99,6 +111,7 @@ const InvoiceListScreen = ({ navigation }) => {
           </View>
         }
       />
+      {/* Botón flotante para agregar factura */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => navigation.navigate('InvoicesTab', { screen: 'CreateInvoice' })}
@@ -106,7 +119,7 @@ const InvoiceListScreen = ({ navigation }) => {
         <Ionicons name="add" size={24} color={colors.background} />
       </TouchableOpacity>
 
-      {/* Modal de detalles */}
+      {/* Modal de detalles de factura */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -149,6 +162,7 @@ const InvoiceListScreen = ({ navigation }) => {
   );
 };
 
+// Estilos locales de la pantalla
 const styles = StyleSheet.create({
   header: {
     padding: spacing.md,

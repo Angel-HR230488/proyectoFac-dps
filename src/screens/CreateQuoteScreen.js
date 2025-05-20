@@ -1,3 +1,4 @@
+// Importaciones de librerías y componentes necesarios
 import React, { useState } from 'react';
 import {
   View,
@@ -17,25 +18,32 @@ import { globalStyles, colors, typography, spacing } from '../styles/globalStyle
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../api/api';
 
+// Pantalla para crear una nueva cotización
 const CreateQuoteScreen = ({ navigation }) => {
+  // Estado para los campos del formulario
   const [form, setForm] = useState({
     name: '',
     NRC: '',
     description: '',
   });
+  // Estado para mostrar indicador de carga
   const [loading, setLoading] = useState(false);
 
+  // Maneja cambios en los campos del formulario
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
+  // Maneja el envío del formulario
   const handleSubmit = async () => {
+    // Validación básica de campos obligatorios
     if (!form.name || !form.NRC) {
       Alert.alert('Error', 'Nombre y NRC son obligatorios');
       return;
     }
     setLoading(true);
     try {
+      // Envía los datos a la API
       await api.post('items/quotation', form);
       Alert.alert('Éxito', 'Cotización creada correctamente');
       navigation.goBack();
@@ -46,28 +54,33 @@ const CreateQuoteScreen = ({ navigation }) => {
     }
   };
 
+  // Renderizado de la pantalla
   return (
     <SafeAreaView style={globalStyles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Text style={typography.h1}>Crear Cotización</Text>
+        {/* Campo: Nombre del cliente */}
         <TextInput
           style={globalStyles.input}
           placeholder="Nombre del cliente"
           value={form.name}
           onChangeText={(text) => handleChange('name', text)}
         />
+        {/* Campo: NRC */}
         <TextInput
           style={globalStyles.input}
           placeholder="NRC"
           value={form.NRC}
           onChangeText={(text) => handleChange('NRC', text)}
         />
+        {/* Campo: Descripción */}
         <TextInput
           style={globalStyles.input}
           placeholder="Descripción"
           value={form.description}
           onChangeText={(text) => handleChange('description', text)}
         />
+        {/* Botón para crear la cotización */}
         <TouchableOpacity
           style={[globalStyles.button, { marginTop: spacing.lg }]}
           onPress={handleSubmit}
@@ -82,6 +95,7 @@ const CreateQuoteScreen = ({ navigation }) => {
 
 export default CreateQuoteScreen;
 
+// Estilos locales 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
