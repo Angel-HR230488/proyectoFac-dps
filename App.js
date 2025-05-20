@@ -1,22 +1,22 @@
 // Importa React y los hooks useEffect y useState para manejar estado y efectos secundarios.
 import React, { useEffect, useState } from 'react';
 
-// Importa el contenedor principal de navegación de React Navigation.
+
 import { NavigationContainer } from '@react-navigation/native';
 
-// Importa el componente de la barra de estado de Expo.
+
 import { StatusBar } from 'expo-status-bar';
 
 // Importa el proveedor de Safe Area para manejar correctamente los márgenes en dispositivos con muescas o barras superiores/inferiores.
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Importa AsyncStorage para guardar y recuperar datos localmente en el dispositivo.
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Importa el componente principal de navegación de la app (cuando el usuario está logueado).
 import AppNavigator from './src/navigation/AppNavigator';
 
-// Importa la pantalla de inicio de sesión (cuando el usuario no está logueado).
+
 import LoginScreen from './src/screens/LoginScreen';
 
 // Importa el módulo Alert de React Native para mostrar alertas al usuario.
@@ -24,13 +24,13 @@ import { Alert } from 'react-native';
 
 // Componente principal de la aplicación.
 export default function App() {
-  // Estado para guardar el token (si el usuario ha iniciado sesión).
+  
   const [token, setToken] = useState(null);
 
   // Estado para manejar si se está cargando la verificación del token.
   const [loading, setLoading] = useState(true);
 
-  // useEffect se ejecuta una vez cuando el componente se monta.
+  
   useEffect(() => {
     // Función asincrónica que verifica si hay un token guardado en AsyncStorage.
     const checkToken = async () => {
@@ -39,8 +39,7 @@ export default function App() {
       setLoading(false); // Marca que ya no está cargando.
     };
 
-    checkToken(); // Llama la función para verificar el token.
-
+    checkToken(); 
     // Opcional: revisa el token cada segundo (puede usarse para detección de logout).
     const interval = setInterval(checkToken, 1000);
 
